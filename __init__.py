@@ -11,7 +11,7 @@ import time
 import pypinyin
 import xlwings
 
-__title__ = 'goods_pay_sheet_auto_generator'
+__title__ = 'GoodsPaySheetAuto'
 __version__ = '0.1.0'
 __author__ = 'Berry'
 __all__ = ['ArrangeInfo', 'PaymentInfo']  # 实在想不到Mami类拿出去有什么用，还可能触发ERR02，不导出（main()不导出更是废话）
