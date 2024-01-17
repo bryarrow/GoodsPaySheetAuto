@@ -62,7 +62,7 @@ class ArrangeInfo:
         根据全表判断调价是否配平
         :return: 表示是否配平的Bool值，是：True，否：False
         """
-        # TODO(@bryarrow): 根据全表判断调价是否配平
+        # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50222093): 根据全表判断调价是否配平
         pass
     
     def __is_float_prices_good_sum(self):
@@ -173,7 +173,8 @@ class ArrangeInfo:
         获取CN区域
         :return: 表示CN所在区域的EXCEL格式的字符串
         """
-        # TODO(@bryarrow): 从存储整个原表并传递CN区域改为仅存储CN区域（我还是觉得不存储排表只存储这部分区域比较好，但现在懒得改了）
+        # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50222164):
+        #   从存储整个原表并传递CN区域改为仅存储CN区域（我还是觉得不存储排表只存储这部分区域比较好，但现在懒得改了）
         return self.__start_col + self.__start_line + ':' + self.__end_col + self.__end_line
     
     def get_arrange_sheet(self):
@@ -253,8 +254,10 @@ class Mami:
         for i in range(len(self.__arrange)):
             if self.__arrange[i] != 0:
                 arrange_str += chr_list[i] + str(self.__arrange[i]) + ' '
-                # TODO(@bryarrow): 根据角色名决定是否添加‘-’
-                # TODO(@bryarrow): 添加分组+角色名的命名方式
+                # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50227501):
+                #   根据角色名决定是否添加‘-’
+                # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50227582):
+                #   添加分组+角色名的命名方式
         if arrange_str != '':
             arrange_str = arrange_str[:-1]
         return arrange_str
