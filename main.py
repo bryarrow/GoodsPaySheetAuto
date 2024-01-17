@@ -67,7 +67,7 @@ class ArrangeInfo:
     # 调价列表
     __float_prices: list[float]
 
-    def __is_float_price_good(self):
+    def __is_float_price_good(self):  # pylint: disable=unused-private-member; 待完成函数暂不使用
         """
         根据全表判断调价是否配平
         :return: 表示是否配平的Bool值，是：True，否：False
@@ -79,7 +79,7 @@ class ArrangeInfo:
         根据调价加和是否为0判断调价是否配平
         :return: 表示是否配平的Bool值，是：True，否：False
         """
-        return sum(self.__float_prices) == 0 if True else False
+        return sum(self.__float_prices) == 0 if True else False  # pylint: disable=using-constant-test; 纯纯误报
 
     def __init__(self, arrange_sheet: xlwings.Sheet, target: str, avg_price=-1.0, avg_price_cell=''):
         """
@@ -260,7 +260,8 @@ class Mami:
             raise ValueError('ERR02: 在Mami.get_arrange()中传入的角色列表长度与自身排表长度不同（请联系开发者）')
 
         arrange_str = ''
-        for i in range(len(self.__arrange)):
+        for i in range(len(self.__arrange)):  # pylint: disable=consider-using-enumerate
+            # 这里i是作为第几个角色使用，所以使用range而非迭代器，关闭pylint警告
             if self.__arrange[i] != 0:
                 arrange_str += chr_list[i] + str(self.__arrange[i]) + ' '
                 # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50227501):
@@ -324,7 +325,8 @@ class PaymentInfo:
         肾表输出方法
         :param payment_sheet: 输出的目的EXCEL表格对应的xlwings.Sheet实例
         """
-        for i in range(len(self.__mamis)):
+        for i in range(len(self.__mamis)):  # pylint: disable=consider-using-enumerate
+            # 这里i是作为肾表第几行使用，故不使用迭代器
             payment_sheet["A" + str(i + 3)].value = pypinyin.slug(self.__mamis[i].get_cn())[0].upper()
             payment_sheet["B" + str(i + 3)].value = self.__mamis[i].get_cn()
             payment_sheet["C" + str(i + 3)].value = self.__mamis[i].get_arrange_num()
@@ -359,6 +361,11 @@ class PaymentInfo:
 
 
 def main():
+    """
+    主函数，在单独运行时处理输入输出等
+    :return:
+    """
+
     # 自己用时候记得改这里~
     file = r'D:\OneDrive\文件\璐璐的表\fullAuto\自动化模板.xlsx'
     target = 'D3:I53'
