@@ -294,7 +294,8 @@ max-attributes=10
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+# 建议保持在15以下，但是必要时可以超过15不应超过20
+max-branches=20
 
 # Maximum number of locals for function / method body.
 max-locals=15
