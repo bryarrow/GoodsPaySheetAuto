@@ -82,7 +82,7 @@ pyinstaller main.py
 
 ## 致谢与版权信息：
 
-本项目采用 **木兰V2** 许可证开源。[[LICENSE]](https://github.com/bryarrow/GoodsPaySheetAuto/blob/master/LICENSE)
+本项目采用 **木兰宽松许可证V2** 许可证开源。[[LICENSE]](https://github.com/bryarrow/GoodsPaySheetAuto/blob/master/LICENSE)
 
 本项目离不开其他的开源项目的支持，他们是：
 
