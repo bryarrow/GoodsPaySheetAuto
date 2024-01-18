@@ -132,7 +132,7 @@ class ArrangeInfo:
             except TypeError as e:
                 raise TypeError('ERR00:‘' + avg_price_cell + '’单元格内容不是数字') from e
 
-        self.__chrs = arrange_sheet['B3:B' + self.__end_line].value
+        self.__chrs = list(map(str, arrange_sheet['B3:B' + self.__end_line].value))
         try:
             self.__float_prices = list(map(float, arrange_sheet['C3:C' + self.__end_line].value))
         # 这里对异常的处理同上一条注释，因为是不同的部分出错所以使用了不同的错误代码
