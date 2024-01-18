@@ -1,6 +1,7 @@
 # GoodsPaySheetAuto——谷团自动打肾表工具
 
----
+[![Download](https://img.shields.io/github/v/release/bryarrow/GoodsPaySheetAuto?label=Download)](https://github.com/bryarrow/GoodsPaySheetAuto/releases/latest)
+
 ## 介绍
 
 管理（工具人）福音，自动根据排表打肾表的小工具，什么？！新谷有几百妈咪要吃？打肾表眼要花了？来试试这个吧！
@@ -34,7 +35,7 @@
 ## 下载使用
 
 点此从GitHub Release下载：
-[![Download](https://img.shields.io/github/v/release/bryarrow/GoodsPaySheetAuto?label=Download)](https://github.com/shatyuka/Zhiliao/releases/latest)
+[![Download](https://img.shields.io/github/v/release/bryarrow/GoodsPaySheetAuto?label=Download)](https://github.com/bryarrow/GoodsPaySheetAuto/releases/latest)
 
 初次使用建议下载带EXCEL模板的ZIP格式，解压后填好排表，启动程序按提示输入各项信息后肾表就制作好啦
 
