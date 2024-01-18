@@ -366,10 +366,11 @@ def main():
     :return:
     """
 
-    # 自己用时候记得改这里~
-    file = r'D:\OneDrive\文件\璐璐的表\fullAuto\自动化模板.xlsx'
-    target = 'D3:I53'
-    avg_price_cell = 'B1'
+    file = input('请输入排表文件路径: ')
+    target = input('请输入CN区域: ')
+    avg_price_cell = input('请输入写有均价的单元格（留空默认为B1）: ')
+
+    print('\n----start{ ' + str(time.time()) + ' }-----\n')
 
     wb = xlwings.Book(file)
     arrange_sheet = wb.sheets[0]
@@ -378,8 +379,8 @@ def main():
     payment_info = PaymentInfo(ArrangeInfo(arrange_sheet, target, avg_price_cell=avg_price_cell))
     payment_info.print_payment(payment_sheet)
 
+    print('\n--------------- end ---------------')
+
 
 if __name__ == '__main__':
-    print('\n----start{ ' + str(time.time()) + ' }-----\n')
     main()
-    print('\n--------------- end ---------------')
