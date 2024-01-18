@@ -381,6 +381,9 @@ def main():
 
     print('\n--------------- end ---------------')
 
+    print('运行完毕，按任意键退出。')
+    input()
+
 
 if __name__ == '__main__':
     main()
