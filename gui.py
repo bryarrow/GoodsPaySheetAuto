@@ -45,6 +45,10 @@ def do_sheet(file_path: str, target: str, avg_price_cell: str = ''):
 
 
 def gui():
+    """
+    生成窗口
+    """
+
     style = Style()
     root = style.master
     root.title('GoodsPaySheetAuto——谷团自动打肾表工具')
