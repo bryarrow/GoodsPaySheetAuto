@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 """
-全自动谷团肾表生成器——GUI部分
+全自动谷团肾表生成器——图形交互界面
 
 by Berry(GitHub@bryarrow)
 
@@ -17,8 +17,8 @@ See the Mulan PSL v2 for more details.
 """
 
 import time
-from tkinter import ttk
 
+from tkinter import ttk
 from ttkbootstrap import Style
 
 import main
@@ -26,7 +26,7 @@ import main
 
 def do_sheet(file_path: str, target: str, avg_price_cell: str = ''):
     """
-    main.py里面main()的翻版，用来发起计算
+    按钮回调函数，发起计算
     :param file_path: 文件路径
     :param target: CN区域
     :param avg_price_cell: 调价单元格
@@ -44,27 +44,32 @@ def do_sheet(file_path: str, target: str, avg_price_cell: str = ''):
     print('\n--------------- end ---------------')
 
 
-style = Style()
-root = style.master
-root.title('GoodsPaySheetAuto——谷团自动打肾表工具')
-frm = ttk.Frame(root, padding=10)
-frm.grid()
+def gui():
+    style = Style()
+    root = style.master
+    root.title('GoodsPaySheetAuto——谷团自动打肾表工具')
+    frm = ttk.Frame(root, padding=10)
+    frm.grid()
 
-ttk.Label(frm, text='请输入表的路径：').grid(column=0, row=0)
-path_entry = ttk.Entry(frm)
-path_entry.grid(column=0, row=1)
+    ttk.Label(frm, text='请输入表的路径：').grid(column=0, row=0)
+    path_entry = ttk.Entry(frm)
+    path_entry.grid(column=0, row=1)
 
-ttk.Label(frm, text='请输入CN区域：').grid(column=0, row=2)
-target_entry = ttk.Entry(frm)
-target_entry.grid(column=0, row=3)
+    ttk.Label(frm, text='请输入CN区域：').grid(column=0, row=2)
+    target_entry = ttk.Entry(frm)
+    target_entry.grid(column=0, row=3)
 
-ttk.Label(frm, text='请输入均价单元格：').grid(column=0, row=4)
-avg_price_entry = ttk.Entry(frm)
-avg_price_entry.grid(column=0, row=5)
+    ttk.Label(frm, text='请输入均价单元格：').grid(column=0, row=4)
+    avg_price_entry = ttk.Entry(frm)
+    avg_price_entry.grid(column=0, row=5)
 
-ttk.Button(frm,
-           text="GO",
-           command=lambda: do_sheet(path_entry.get(), target_entry.get(), avg_price_entry.get())
-           ).grid(column=1, row=0, rowspan=6)
+    ttk.Button(frm,
+               text="GO",
+               command=lambda: do_sheet(path_entry.get(), target_entry.get(), avg_price_entry.get())
+               ).grid(column=1, row=0, rowspan=6)
 
-root.mainloop()
+    root.mainloop()
+
+
+if __name__ == '__main__':
+    gui()
