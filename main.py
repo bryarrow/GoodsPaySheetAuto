@@ -358,6 +358,11 @@ class PaymentInfo:
 
             payment_sheet["J" + str(i + 3)].value = self.__mamis[i].get_cn()
             payment_sheet["K" + str(i + 3)].value = pypinyin.slug(self.__mamis[i].get_cn())[0].upper()
+        # 写入总计公式
+        payment_sheet["C" + str(len(self.__mamis) + 3)].value = "=SUM(C3:C" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["D" + str(len(self.__mamis) + 3)].value = "=SUM(D3:D" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["G" + str(len(self.__mamis) + 3)].value = "=SUM(G3:G" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["H" + str(len(self.__mamis) + 3)].value = "=SUM(H3:H" + str(len(self.__mamis) + 2) + ")"
 
 
 def main():
