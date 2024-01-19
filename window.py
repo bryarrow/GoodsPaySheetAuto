@@ -17,7 +17,6 @@ See the Mulan PSL v2 for more details.
 """
 
 import time
-import tkinter as tk
 from tkinter import ttk
 
 from ttkbootstrap import Style
