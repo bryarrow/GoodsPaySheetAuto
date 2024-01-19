@@ -332,29 +332,28 @@ class PaymentInfo:
             payment_sheet["C" + str(i + 3)].value = self.__mamis[i].get_arrange_num()
             payment_sheet["D" + str(i + 3)].value = self.__mamis[i].get_pay_zfb()
 
-            # E列是肾WX，这里直接算出来写入了（算法看下面很明白）
-            # ISSUE: 但是这样当需要合并的时候需要手算，在想要不要还是写公式
-            # 对应EXCEL公式: =IF(D{i}=0,0,IF(D{i}>100,D{i}+ROUND(D{i}*0.001,2),D{i}+0.1))
-            if self.__mamis[i].get_pay_zfb() == 0:
-                payment_sheet["E" + str(i + 3)].value = 0
-            elif self.__mamis[i].get_pay_zfb() > 100:
-                payment_sheet["E" + str(i + 3)].value = (self.__mamis[i].get_pay_zfb()
-                                                         + round(self.__mamis[i].get_pay_zfb() * 0.001, 2))
-            else:
-                payment_sheet["E" + str(i + 3)].value = self.__mamis[i].get_pay_zfb() + 0.1
+            # E列是肾WX，因为如果带冷备注在CN上现在需要手动合并，这里写了对应EXCEL公式:
+            # =IF(D{i+3}=0,0,IF(D{i+3}>100,D{i+3}+ROUND(D{i+3}*0.001,2),D{i+3}+0.1))
+            payment_sheet["E" + str(i + 3)].value = (
+                    '=IF(D' + str(i + 3) + '=0,'
+                                           '0,'
+                                           'IF(D' + str(i + 3) + '>100,'
+                                                                 'D' + str(i + 3) +
+                                                                 '+ROUND(D' + str(i + 3) + '*0.001,2),'
+                                                                 'D' + str(i + 3) + '+0.1))')
 
             payment_sheet["F" + str(i + 3)].value = self.__mamis[i].get_arrange(self.__chrs_list)
             payment_sheet["G" + str(i + 3)].value = self.__mamis[i].get_arrange_num()
             payment_sheet["H" + str(i + 3)].value = self.__mamis[i].get_pay_zfb()
 
             # 同E列
-            if self.__mamis[i].get_pay_zfb() == 0:
-                payment_sheet["I" + str(i + 3)].value = 0
-            elif self.__mamis[i].get_pay_zfb() > 100:
-                payment_sheet["I" + str(i + 3)].value = (self.__mamis[i].get_pay_zfb()
-                                                         + round(self.__mamis[i].get_pay_zfb() * 0.001, 2))
-            else:
-                payment_sheet["I" + str(i + 3)].value = self.__mamis[i].get_pay_zfb() + 0.1
+            payment_sheet["I" + str(i + 3)].value = (
+                    '=IF(H' + str(i + 3) + '=0,'
+                                           '0,'
+                                           'IF(H' + str(i + 3) + '>100,'
+                                                                 'H' + str(i + 3) +
+                                                                 '+ROUND(H' + str(i + 3) + '*0.001,2),'
+                                                                 'H' + str(i + 3) + '+0.1))')
 
             payment_sheet["J" + str(i + 3)].value = self.__mamis[i].get_cn()
             payment_sheet["K" + str(i + 3)].value = pypinyin.slug(self.__mamis[i].get_cn())[0].upper()
