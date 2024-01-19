@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 """
-全自动谷团肾表生成器
+全自动谷团肾表生成器——核心处理部分
 
 by Berry(GitHub@bryarrow)
 
@@ -15,8 +15,6 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-
-import time
 
 import pypinyin
 import xlwings
@@ -362,32 +360,3 @@ class PaymentInfo:
         payment_sheet["D" + str(len(self.__mamis) + 3)].value = "=SUM(D3:D" + str(len(self.__mamis) + 2) + ")"
         payment_sheet["G" + str(len(self.__mamis) + 3)].value = "=SUM(G3:G" + str(len(self.__mamis) + 2) + ")"
         payment_sheet["H" + str(len(self.__mamis) + 3)].value = "=SUM(H3:H" + str(len(self.__mamis) + 2) + ")"
-
-
-def main():
-    """
-    主函数，在单独运行时处理输入输出等
-    :return:
-    """
-
-    file = input('请输入排表文件路径: ')
-    target = input('请输入CN区域: ')
-    avg_price_cell = input('请输入写有均价的单元格（留空默认为B1）: ')
-
-    print('\n----start{ ' + str(time.time()) + ' }-----\n')
-
-    wb = xlwings.Book(file)
-    arrange_sheet = wb.sheets[0]
-    payment_sheet = wb.sheets[1]
-
-    payment_info = PaymentInfo(ArrangeInfo(arrange_sheet, target, avg_price_cell=avg_price_cell))
-    payment_info.print_payment(payment_sheet)
-
-    print('\n--------------- end ---------------')
-
-    print('运行完毕，按任意键退出。')
-    input()
-
-
-if __name__ == '__main__':
-    main()
