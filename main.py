@@ -17,7 +17,8 @@ See the Mulan PSL v2 for more details.
 """
 
 import pypinyin
-import xlwings
+import openpyxl.utils
+from openpyxl.worksheet.worksheet import Worksheet
 
 __title__ = 'GoodsPaySheetAuto'
 __version__ = '0.1.0'
@@ -45,25 +46,25 @@ class ArrangeInfo:
     """
 
     # 创建时使用的排表实例
-    __arrange_sheet: xlwings.Sheet
+    __arrange_sheet: Worksheet
 
     # CN区域开始列
-    __start_col: str = ''
+    __start_col: str
     # CN区域开始行
-    __start_line: str = ''
+    __start_line: int
     # CN区域结束列
-    __end_col: str = ''
+    __end_col: str
     # CN区域结束行
-    __end_line: str = ''
+    __end_line: int
 
     # CN列表
     __cns: list[str] = []
     # 角色列表
-    __chrs: list[str]
+    __chrs: list[str] = []
     # 均价
-    __avg_price: float
+    __avg_price: float = 0.0
     # 调价列表
-    __float_prices: list[float]
+    __float_prices: list[float] = []
 
     def __is_float_price_good(self):  # pylint: disable=unused-private-member; 待完成函数暂不使用
         """
@@ -79,11 +80,11 @@ class ArrangeInfo:
         """
         return sum(self.__float_prices) == 0 if True else False  # pylint: disable=using-constant-test; 纯纯误报
 
-    def __init__(self, arrange_sheet: xlwings.Sheet, target: str, avg_price=-1.0, avg_price_cell=''):
+    def __init__(self, arrange_sheet: Worksheet, target: str, avg_price=-1.0, avg_price_cell=''):
         """
         使用排表实例、目标CN区域与均价信息构造该类。
 
-        :param arrange_sheet: xlwings.Sheet类型的排表实例
+        :param arrange_sheet: openpyxl.worksheet.worksheet.Worksheet类型的排表实例
         :param target: 排表中写有CN的区域，如示例文件中的‘D3:I53’
 
         :param avg_price: 【可选】均价数值，与avg_price_cell二选一使用，
@@ -97,18 +98,8 @@ class ArrangeInfo:
         """
         self.__arrange_sheet = arrange_sheet
 
-        start = target.split(":")[0]
-        end = target.split(":")[1]
-        for i in start:
-            if ord(i) not in range(ord("0"), ord(":")):  # ‘：’是ASCII码表中9的下一个，用ord()转换为ASCII的方式判断字符串0-9
-                self.__start_col += i
-            else:
-                self.__start_line += i
-        for i in end:
-            if ord(i) not in range(ord("0"), ord(":")):
-                self.__end_col += i
-            else:
-                self.__end_line += i
+        self.__start_col, self.__start_line = openpyxl.utils.cell.coordinate_from_string(target.split(':')[0])
+        self.__end_col, self.__end_line = openpyxl.utils.cell.coordinate_from_string(target.split(':')[1])
 
         if avg_price == -1 and avg_price_cell == '':
             print('INFO: 未指定均价，将以‘B1’单元格的值为均价')
@@ -130,21 +121,28 @@ class ArrangeInfo:
             except TypeError as e:
                 raise TypeError('ERR00:‘' + avg_price_cell + '’单元格内容不是数字') from e
 
-        self.__chrs = list(map(str, arrange_sheet['B3:B' + self.__end_line].value))
+        # 因为openpyxl对切片始终返回tuple(tuple(Cell))，写成map就变成map套lambda套map了，很丑，还是放弃了紧凑改成写循环
+        for line in arrange_sheet[f'B3:B{self.__end_line}']:
+            for cell in line:
+                if cell.value is not None and cell.value != '':
+                    self.__chrs.append(str(cell.value))
+
         try:
-            self.__float_prices = list(map(float, arrange_sheet['C3:C' + self.__end_line].value))
+            for line in arrange_sheet[f'C3:C{self.__end_line}']:
+                for cell in line:
+                    self.__float_prices.append(float(cell.value))
         # 这里对异常的处理同上一条注释，因为是不同的部分出错所以使用了不同的错误代码
         except ValueError as e:
-            raise TypeError('ERR01: 调价部分（C3:C' + self.__end_line + '）有非数字，请检查') from e
+            raise TypeError(f'ERR01: 调价部分（C3:C{self.__end_line}）有非数字，请检查') from e
         except TypeError as e:
-            raise TypeError('ERR01: 调价部分（C3:C' + self.__end_line + '）有非数字，请检查') from e
+            raise TypeError(f'ERR01: 调价部分（C3:C{self.__end_line}）有非数字，请检查') from e
         if not self.__is_float_prices_good_sum():
             print('WARRING: 调价加和不为0，请检查')
 
-        for li in arrange_sheet[target].value:
-            for cn in li:
-                if cn is not None and cn not in self.__cns:
-                    self.__cns.append(cn)
+        for line in arrange_sheet[target]:
+            for cn_cell in line:
+                if cn_cell.value is not None and cn_cell.value not in self.__cns:
+                    self.__cns.append(cn_cell.value)
         self.__cns.sort(key=lambda x: pypinyin.slug(x).lower())
 
     def get_cns(self):
@@ -182,7 +180,7 @@ class ArrangeInfo:
         """
         # TODO(https://github.com/users/bryarrow/projects/2/views/1?pane=issue&itemId=50222164):
         #   从存储整个原表并传递CN区域改为仅存储CN区域（我还是觉得不存储排表只存储这部分区域比较好，但现在懒得改了）
-        return self.__start_col + self.__start_line + ':' + self.__end_col + self.__end_line
+        return f'{self.__start_col}{self.__start_line}:{self.__end_col}{self.__end_line}'
 
     def get_arrange_sheet(self):
         """
@@ -309,16 +307,16 @@ class PaymentInfo:
             self.__mamis.append(Mami(cn, len(self.__chrs_list)))
 
         t = 0
-        for li in arrange_info.get_arrange_sheet()[arrange_info.get_target()].value:
-            for cn in li:
-                if cn is not None:
-                    self.__mamis[arrange_info.get_cns().index(cn)].add_arrange(
+        for line in arrange_info.get_arrange_sheet()[arrange_info.get_target()]:
+            for cn_cell in line:
+                if cn_cell.value is not None:
+                    self.__mamis[arrange_info.get_cns().index(str(cn_cell.value))].add_arrange(
                         t,
                         arrange_info.get_avg_price() + arrange_info.get_float_prices()[t]
                     )
             t = t + 1
 
-    def print_payment(self, payment_sheet: xlwings.Sheet):
+    def print_payment(self, payment_sheet: Worksheet):
         """
         肾表输出方法
         :param payment_sheet: 输出的目的EXCEL表格对应的xlwings.Sheet实例
@@ -332,31 +330,21 @@ class PaymentInfo:
 
             # E列是肾WX，因为如果带冷备注在CN上现在需要手动合并，这里写了对应EXCEL公式:
             # =IF(D{i+3}=0,0,IF(D{i+3}>100,D{i+3}+ROUND(D{i+3}*0.001,2),D{i+3}+0.1))
-            payment_sheet["E" + str(i + 3)].value = (
-                    '=IF(D' + str(i + 3) + '=0,'
-                                           '0,'
-                                           'IF(D' + str(i + 3) + '>100,'
-                                                                 'D' + str(i + 3) +
-                                                                 '+ROUND(D' + str(i + 3) + '*0.001,2),'
-                                                                 'D' + str(i + 3) + '+0.1))')
+            payment_sheet["E" + str(i + 3)].value = \
+                f'=IF(D{i+3}=0,0,IF(D{i+3}>100,D{i+3}+ROUND(D{i+3}*0.001,2),D{i+3}+0.1))'
 
             payment_sheet["F" + str(i + 3)].value = self.__mamis[i].get_arrange(self.__chrs_list)
             payment_sheet["G" + str(i + 3)].value = self.__mamis[i].get_arrange_num()
             payment_sheet["H" + str(i + 3)].value = self.__mamis[i].get_pay_zfb()
 
             # 同E列
-            payment_sheet["I" + str(i + 3)].value = (
-                    '=IF(H' + str(i + 3) + '=0,'
-                                           '0,'
-                                           'IF(H' + str(i + 3) + '>100,'
-                                                                 'H' + str(i + 3) +
-                                                                 '+ROUND(H' + str(i + 3) + '*0.001,2),'
-                                                                 'H' + str(i + 3) + '+0.1))')
+            payment_sheet["I" + str(i + 3)].value = \
+                f'=IF(H{i+3}=0,0,IF(H{i+3}>100,H{i+3}+ROUND(H{i+3}*0.001,2),H{i+3}+0.1))'
 
             payment_sheet["J" + str(i + 3)].value = self.__mamis[i].get_cn()
             payment_sheet["K" + str(i + 3)].value = pypinyin.slug(self.__mamis[i].get_cn())[0].upper()
         # 写入总计公式
-        payment_sheet["C" + str(len(self.__mamis) + 3)].value = "=SUM(C3:C" + str(len(self.__mamis) + 2) + ")"
-        payment_sheet["D" + str(len(self.__mamis) + 3)].value = "=SUM(D3:D" + str(len(self.__mamis) + 2) + ")"
-        payment_sheet["G" + str(len(self.__mamis) + 3)].value = "=SUM(G3:G" + str(len(self.__mamis) + 2) + ")"
-        payment_sheet["H" + str(len(self.__mamis) + 3)].value = "=SUM(H3:H" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["C" + str(len(self.__mamis) + 3)] = "=SUM(C3:C" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["D" + str(len(self.__mamis) + 3)] = "=SUM(D3:D" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["G" + str(len(self.__mamis) + 3)] = "=SUM(G3:G" + str(len(self.__mamis) + 2) + ")"
+        payment_sheet["H" + str(len(self.__mamis) + 3)] = "=SUM(H3:H" + str(len(self.__mamis) + 2) + ")"

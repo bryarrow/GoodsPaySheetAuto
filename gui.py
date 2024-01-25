@@ -16,10 +16,9 @@ MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 
-import time
-
 from tkinter import ttk
 from ttkbootstrap import Style
+from openpyxl import load_workbook
 
 import main
 
@@ -32,16 +31,14 @@ def do_sheet(file_path: str, target: str, avg_price_cell: str = ''):
     :param avg_price_cell: 调价单元格
     """
 
-    print('\n----start{ ' + str(time.time()) + ' }-----\n')
-
-    wb = main.xlwings.Book(file_path)
-    arrange_sheet = wb.sheets[0]
-    payment_sheet = wb.sheets[1]
+    workbook = load_workbook(file_path)
+    arrange_sheet = workbook['排表']
+    payment_sheet = workbook['肾表']
 
     payment_info = main.PaymentInfo(main.ArrangeInfo(arrange_sheet, target, avg_price_cell=avg_price_cell))
     payment_info.print_payment(payment_sheet)
 
-    print('\n--------------- end ---------------')
+    workbook.save(file_path)
 
 
 def gui():

@@ -17,7 +17,7 @@ See the Mulan PSL v2 for more details.
 """
 
 import time
-import xlwings
+from openpyxl import load_workbook
 import main
 
 
@@ -33,12 +33,14 @@ def cli():
 
     print('\n----start{ ' + str(time.time()) + ' }-----\n')
 
-    wb = xlwings.Book(file)
-    arrange_sheet = wb.sheets[0]
-    payment_sheet = wb.sheets[1]
+    wb = load_workbook(file)
+    arrange_sheet = wb['排表']
+    payment_sheet = wb['肾表']
 
     payment_info = main.PaymentInfo(main.ArrangeInfo(arrange_sheet, target, avg_price_cell=avg_price_cell))
     payment_info.print_payment(payment_sheet)
+
+    wb.save(file)
 
     print('\n--------------- end ---------------')
 
