@@ -27,6 +27,7 @@ def cli():
     :return:
     """
 
+    print()  # 开始前换行，和调用命令/调试信息分隔
     file = input('请输入排表文件路径: ')
     target = input('请输入CN区域: ')
     avg_price_cell = input('请输入写有均价的单元格（留空默认为B1）: ')
